@@ -406,12 +406,58 @@
             "電子產品": ["充電器", "充電線", "行動電源", "萬國插座", "GoPro", "電池/記憶卡", "網卡"],
             "滑雪準備": ["雪鏡", "排汗衣", "保暖長袖", "手套", "長襪", "防滑鞋", "屁墊", "暖暖包", "護膝", "護手", "冰爪"]
         };
+        
+        // --- Updated Food Data ---
         const foodData = [
-            { day: "D1 上野/輕井澤", spots: [{ name: "蟹食放題 ごっつお", type: "午餐", address: "東京都文京區湯島ライワビル 4F", note: "螃蟹吃到飽" }, { name: "東京炸豬排 がぶう", type: "午餐", address: "東京都台東區上野4-6-4 OGSⅡ B1F", note: "" }, { name: "しゃぶしゃぶ愛宕", type: "晚餐", address: "389-0104長野県北佐久郡軽井沢町東167", note: "輕井澤涮涮鍋", tel: "0267-41-6111" }, { name: "村民食堂", type: "晚餐", address: "389-0104長野県北佐久郡軽井沢町長倉2148", note: "星野區", tel: "0267-44-3571" }]},
-            { day: "D4 東京上野", spots: [{ name: "三浦三崎港迴轉壽司", type: "晚餐", address: "東京都台東區上野6-12-14", note: "食材堆得像山一樣" }, { name: "ぽん多本家 豬排", type: "晚餐", address: "東京都台東区上野3-23-3", note: "" }, { name: "上野兔屋 銅鑼燒", type: "甜點", address: "東京都台東区上野１丁目１０−10", note: "" }]},
-            { day: "D7 山寺/仙台", spots: [{ name: "焰藏 (山寺店)", type: "午餐", address: "Yamagata Soba no Enzou Yamadera", note: "山形蕎麥麵" }]},
-            { day: "D8 仙台", spots: [{ name: "肉十八", type: "晚餐", address: "Sendai", note: "燒肉" }]},
-             { day: "D9 山形", spots: [{ name: "酒菜一", type: "晚餐", address: "1 Chome-7-7 Kasumicho, Yamagata", tel:"+815054841844", note: "" }, { name: "山形肉問屋センター", type: "晚餐", address: "Yamagata, Saiwaicho, 1−4 駅南ビル 1F", tel:"+817011455641", note: "" }]}
+            {
+                day: "Day 1-3: 輕井澤 Karuizawa",
+                spots: [
+                    { name: "しゃぶしゃぶ愛宕", type: "晚餐", address: "389-0104 長野県北佐久郡軽井沢町東167", tel: "0267-41-6111", note: "涮涮鍋" },
+                    { name: "アクセス (ACCESS)", type: "晚餐", address: "389-0104 長野県北佐久郡軽井沢町軽井沢東23-2", tel: "0267-42-3081", note: "" },
+                    { name: "村民食堂", type: "晚餐", address: "389-0104 長野県北佐久郡軽井沢町長倉2148", tel: "0267-44-3571", note: "日式定食 / 鄉土料理 (星野區)" },
+                    { name: "ろぐ亭 (Log-tei)", type: "晚餐", address: "389-0104 長野縣北佐久郡輕井澤町長倉3148-1", tel: "0267-45-2341", note: "燒肉 / 牛排" }
+                ]
+            },
+            {
+                day: "Day 4: 東京上野 Ueno",
+                spots: [
+                    { name: "三浦三崎港 迴轉壽司", type: "晚餐", address: "東京都台東區上野6-12-14", tel: "", note: "食材堆得像山一樣" },
+                    { name: "ぽん多本家", type: "晚餐", address: "東京都台東区上野3-23-3", tel: "", note: "炸豬排老舖" },
+                    { name: "上野兔屋 (Usagiya)", type: "甜點", address: "東京都台東区上野１丁目１０−10", tel: "", note: "銅鑼燒名店" },
+                    { name: "EGG BABY CAFÉ", type: "輕食", address: "5 CHOME-10-9 UENO, TAITO CITY, TOKYO 110-0005", tel: "", note: "半熟蛋三明治" },
+                    { name: "鳥恵 上野広小路店", type: "晚餐", address: "東京都文京区湯島3-40-8 栗田ビル 1F", tel: "", note: "燒鳥 (串燒)" }
+                ]
+            },
+            {
+                day: "Day 5: 山形新庄 Shinjo",
+                spots: [
+                    { name: "蕎麥Works蔥房廚", type: "晚餐", address: "新庄市大手町2-28", tel: "0233-23-3120", note: "蕎麥麵 / 居酒屋 (11:00-22:00)" },
+                    { name: "Geta Pan", type: "輕食", address: "新庄市鳥越3807-7", tel: "0233-77-4019", note: "麵包店 (8:30-18:30)" },
+                    { name: "竹美堂", type: "甜點", address: "新庄市沖之町2-28", tel: "0233-22-2297", note: "和菓子 (9:00-19:00)" },
+                    { name: "新旬屋 本店", type: "晚餐", address: "山形県新庄市沖の町3-20", tel: "050-5595-9102", note: "金雞拉麵 (16:30-20:30)" }
+                ]
+            },
+            {
+                day: "Day 7: 山寺 Yamadera",
+                spots: [
+                    { name: "焰藏 (山寺店)", type: "午餐", address: "Yamagata Soba no Enzou Yamadera", tel: "", note: "山形蕎麥麵" }
+                ]
+            },
+            {
+                day: "Day 8: 仙台 Sendai",
+                spots: [
+                    { name: "肉十八", type: "晚餐", address: "1 Chome−8−22 2F, Central, Aoba Ward, Sendai", tel: "", note: "燒肉吃到飽 / 居酒屋" }
+                ]
+            },
+            {
+                day: "Day 9: 山形市區 Yamagata",
+                spots: [
+                    { name: "酒菜一", type: "晚餐", address: "1 Chome-7-7 Kasumicho, Yamagata, 990-0039", tel: "+81 50-5484-1844", note: "居酒屋 / 鄉土料理" },
+                    { name: "山形肉問屋センター", type: "晚餐", address: "Yamagata, Saiwaicho, 1−4 駅南ビル 1F", tel: "+81 70-1145-5641", note: "燒肉 / 肉料理" },
+                    { name: "Suzuran (すずらん)", type: "晚餐", address: "2 Chome-10-5 Kasumicho, Yamagata", tel: "+81 23-642-2911", note: "拉麵 / 中華料理" },
+                    { name: "ISLAND PEAK", type: "酒吧", address: "1 Chome-7-24 Honcho, Yamagata", tel: "+81 23-676-7885", note: "International Café & Bar" }
+                ]
+            }
         ];
 
         // --- Core Logic ---
@@ -609,7 +655,7 @@
             event.currentTarget.classList.remove('text-muji-secondary'); event.currentTarget.classList.add('text-muji-accent');
             window.scrollTo(0,0);
         }
-        function openMap(address) { if(!address) return; window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank'); }
+        function openMap(address) { if(!address) return; window.open(`https://www.google.com/maps/search/?api=1&query=$${encodeURIComponent(address)}`, '_blank'); }
         function openWeather(loc) { window.open(`https://www.google.com/search?q=weather+${loc}+japan`, '_blank'); }
         
         // --- COVER & ICON LOGIC ---
