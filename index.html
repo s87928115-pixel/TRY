@@ -17,13 +17,13 @@
                 extend: {
                     colors: {
                         muji: {
-                            bg: '#fcfaf2', // 米色背景
+                            bg: '#fcfaf2',
                             card: '#ffffff',
                             text: '#4a4a4a',
-                            accent: '#2c5d63', // 沉穩藍綠
+                            accent: '#2c5d63',
                             secondary: '#8c8c8c',
                             border: '#e6e6e6',
-                            highlight: '#d4493e', // 印章紅
+                            highlight: '#d4493e',
                             planA: '#5c7c8a',
                             planB: '#c47c6e'
                         }
@@ -47,7 +47,6 @@
         
         .page-container {
             padding-bottom: 90px;
-            padding-top: 10px;
             min-height: 100vh;
             display: none;
             opacity: 0;
@@ -109,30 +108,51 @@
         }
         .muji-input:focus { border-color: #2c5d63; background: white; }
 
-        /* Day Tabs */
+        /* Day Tabs - High Visibility */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: #2c5d63; /* Dark background for contrast */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
         .day-tabs-container {
             display: flex;
             overflow-x: auto;
-            gap: 8px;
-            padding: 4px 4px 12px 4px;
-            scrollbar-width: none; /* Firefox */
+            gap: 12px;
+            padding: 12px 16px;
+            scrollbar-width: none;
+            align-items: center;
         }
+        
         .day-tab {
             flex: 0 0 auto;
-            padding: 6px 16px;
-            border-radius: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 0.9rem;
             font-weight: bold;
-            border: 1px solid #e0e0e0;
-            background: white;
-            color: #8c8c8c;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid transparent;
             transition: all 0.2s;
         }
+        
         .day-tab.active {
-            background-color: #2c5d63;
-            color: white;
-            border-color: #2c5d63;
-            box-shadow: 0 2px 5px rgba(44, 93, 99, 0.3);
+            background-color: white;
+            color: #2c5d63;
+            transform: scale(1.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .day-tab span {
+            font-size: 0.7rem;
+            display: block;
         }
 
         /* Schedule Table */
@@ -144,7 +164,7 @@
 
         /* Cover */
         #cover-area {
-            height: 200px;
+            height: 180px;
             background-size: cover;
             background-position: center;
             background-color: #ddd;
@@ -163,8 +183,8 @@
             color: #555;
             padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.8rem;
-            margin-top: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -184,29 +204,38 @@
             </label>
         </div>
         
-        <div id="page-plan" class="page-container active px-4">
+        <div id="page-plan" class="page-container active">
             
-            <div class="sticky top-0 bg-muji-bg z-30 pt-2 pb-1">
+            <div class="sticky-header">
                 <div class="day-tabs-container" id="dayTabs">
                     </div>
+                <div class="text-center text-[10px] text-white/50 pb-1">
+                    <i class="fa-solid fa-caret-up"></i> 點擊切換天數
+                </div>
             </div>
 
-            <div id="day-content" class="min-h-[50vh] mt-2 pb-10">
-                </div>
+            <div class="px-4 mt-4">
+                <div id="day-content" class="min-h-[50vh] pb-6">
+                    </div>
 
-            <div class="flex justify-between mt-4 mb-8">
-                <button onclick="changeDay(-1)" id="btnPrev" class="text-muji-secondary px-4 py-2 bg-white rounded-lg shadow-sm disabled:opacity-30"><i class="fa-solid fa-chevron-left"></i> 上一天</button>
-                <button onclick="changeDay(1)" id="btnNext" class="text-muji-accent px-4 py-2 bg-white rounded-lg shadow-sm font-bold disabled:opacity-30">下一天 <i class="fa-solid fa-chevron-right"></i></button>
+                <div class="flex justify-between mb-8 pt-4 border-t border-gray-200">
+                    <button onclick="changeDay(-1)" id="btnPrev" class="text-muji-secondary px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm disabled:opacity-30 flex items-center">
+                        <i class="fa-solid fa-chevron-left mr-2"></i> 上一天
+                    </button>
+                    <button onclick="changeDay(1)" id="btnNext" class="text-white px-4 py-3 bg-muji-accent rounded-lg shadow-sm font-bold disabled:opacity-30 flex items-center">
+                        下一天 <i class="fa-solid fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div id="page-food" class="page-container px-4">
-            <h2 class="text-2xl font-bold mb-4 mt-2 text-muji-text">Food Guide</h2>
+        <div id="page-food" class="page-container px-4 pt-4">
+            <h2 class="text-2xl font-bold mb-4 text-muji-text">Food Guide</h2>
             <div id="food-list" class="space-y-4"></div>
         </div>
 
-        <div id="page-wallet" class="page-container px-4">
-            <h2 class="text-2xl font-bold mb-4 mt-2 text-muji-text">Wallet</h2>
+        <div id="page-wallet" class="page-container px-4 pt-4">
+            <h2 class="text-2xl font-bold mb-4 text-muji-text">Wallet</h2>
             <div class="muji-card p-4 mb-4 bg-white sticky top-0 z-30 shadow-md">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-sm font-bold text-muji-secondary">匯率換算 (1 JPY = <span id="displayRate">0.22</span> TWD)</span>
@@ -246,8 +275,8 @@
             <div id="expenseList" class="space-y-3 pb-10"></div>
         </div>
 
-        <div id="page-lists" class="page-container px-4">
-             <div class="flex space-x-2 mb-4 overflow-x-auto pb-2 mt-2" id="listTabs">
+        <div id="page-lists" class="page-container px-4 pt-4">
+             <div class="flex space-x-2 mb-4 overflow-x-auto pb-2" id="listTabs">
                 <button onclick="switchListTab('packing')" class="list-tab-btn active px-4 py-2 rounded-full text-sm font-bold border border-muji-accent bg-muji-accent text-white">必備清單</button>
                 <button onclick="switchListTab('memo')" class="list-tab-btn px-4 py-2 rounded-full text-sm font-bold border border-muji-border bg-white text-gray-500">備忘錄</button>
                 <button onclick="switchListTab('shop')" class="list-tab-btn px-4 py-2 rounded-full text-sm font-bold border border-muji-border bg-white text-gray-500">購買清單</button>
@@ -267,8 +296,8 @@
             </div>
         </div>
 
-        <div id="page-info" class="page-container px-4">
-            <h2 class="text-2xl font-bold mb-4 mt-2 text-muji-text">Info & Docs</h2>
+        <div id="page-info" class="page-container px-4 pt-4">
+            <h2 class="text-2xl font-bold mb-4 text-muji-text">Info & Docs</h2>
             <div class="space-y-4">
                 <div class="muji-card p-4">
                     <h3 class="font-bold mb-2 flex items-center"><i class="fa-solid fa-qrcode mr-2 text-muji-accent"></i> 入境 QR Code</h3>
@@ -317,7 +346,6 @@
 
     <script>
         // --- DATA WITH WEATHER ---
-        // Weather is estimated for late Feb/March Japan
         const itinerary = [
             { 
                 day: 1, date: "2/24 (二)", title: "抵達 & 移動輕井澤", icon: "fa-plane",
@@ -461,8 +489,7 @@
             }
         ];
 
-        // ... [Preserve other data: hotels, packingList, foodData] ...
-         const hotels = [
+        const hotels = [
             { name: "輕井澤王子飯店西館", date: "2/24-2/27", address: "389-0193 長野縣北佐久郡輕井澤町輕井澤1016-85", tel: "+81-(0)267-42-1113" },
             { name: "LANDABOUT TOKYO", date: "2/27-2/28", address: "東京都, 東京, Taito-ku Negishi 3-4-5", tel: "+81-3-6802-4437" },
             { name: "Route Inn 新莊站前", date: "2/28-3/1", address: "山形県新庄市金沢沖1109-6", tel: "050-1809-5168" },
@@ -489,7 +516,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             renderDayTabs();
-            renderDay(0); // Show Day 1 by default
+            renderDay(0);
             initFood();
             initWallet();
             initLists();
@@ -498,55 +525,31 @@
             updateGlobalWeather();
         });
 
-        // Update Weather in Header
         function updateGlobalWeather() {
             const d = new Date();
             const dateStr = `${d.getMonth()+1}/${d.getDate()}`;
             document.getElementById('globalWeather').innerHTML = `${dateStr} 東京 ⛅ 8°C`;
         }
 
-        // --- NEW PLAN NAVIGATION LOGIC ---
+        // --- NAVIGATION LOGIC ---
         function renderDayTabs() {
             const container = document.getElementById('dayTabs');
             container.innerHTML = itinerary.map((day, idx) => `
                 <button onclick="changeDay(${idx - currentDayIndex})" class="day-tab ${idx === 0 ? 'active' : ''}" id="tab-${idx}">
-                    DAY ${day.day}
+                    D${day.day}
                 </button>
             `).join('');
         }
-
-        function changeDay(offset) {
-            // "offset" is relative step (-1, 1), OR if absolute click, we calculate diff
-            // Actually, let's just use absolute index for tabs, relative for buttons
-            
-            let newIndex;
-            if (Math.abs(offset) === 1 && typeof arguments[1] === 'undefined') {
-                 // Triggered by Prev/Next buttons
-                 newIndex = currentDayIndex + offset;
-            } else {
-                 // Triggered by Tab Click (offset logic handled by caller or just pass index)
-                 // Let's simplified: If called by Tab, offset is the relative move from current?
-                 // Wait, easiest is to let Tab pass the exact index differently. 
-                 // But for simplicity in HTML onclick: `changeDay(idx - current)` works.
-                 newIndex = currentDayIndex + offset;
-            }
-
-            if (newIndex >= 0 && newIndex < itinerary.length) {
-                renderDay(newIndex);
-            }
-        }
         
-        // Override changeDay for direct tab access to be safer
-        window.changeDay = function(diffOrIndex) {
-            let target = currentDayIndex + diffOrIndex;
-            // Hack: Check if it was a direct index click (large diff unlikely, but logic is better explicit)
-            // But since I generated `onclick="changeDay(idx - currentDayIndex)"` in tabs, it works as diff.
-            // For buttons: `onclick="changeDay(1)"` works.
+        // Revised changeDay to handle both relative (from buttons) and absolute (calc from tabs)
+        window.changeDay = function(offset) {
+            let newIndex = currentDayIndex + offset;
             
-            if (target < 0) target = 0;
-            if (target >= itinerary.length) target = itinerary.length - 1;
+            // Boundary checks
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= itinerary.length) newIndex = itinerary.length - 1;
             
-            renderDay(target);
+            renderDay(newIndex);
         }
 
         function renderDay(index) {
@@ -564,7 +567,7 @@
                 }
             });
 
-            // Update Buttons State
+            // Update Footer Buttons
             document.getElementById('btnPrev').disabled = (index === 0);
             document.getElementById('btnNext').disabled = (index === itinerary.length - 1);
 
@@ -591,9 +594,9 @@
             });
 
             const weatherHtml = `
-                <div class="weather-badge mb-2">
-                    <i class="fa-solid ${day.weather.icon} mr-2"></i> ${day.weather.text}
-                    <button onclick="openWeather('${day.weather.link}')" class="ml-2 text-blue-400 hover:text-blue-600"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                <div class="weather-badge mb-2 shadow-sm border border-gray-100">
+                    <i class="fa-solid ${day.weather.icon} mr-2 text-blue-500"></i> ${day.weather.text}
+                    <button onclick="openWeather('${day.weather.link}')" class="ml-2 text-gray-400 hover:text-blue-600 border-l pl-2 border-gray-300"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
                 </div>
             `;
 
@@ -602,11 +605,13 @@
                     <div class="relative mb-8">
                         <div class="timeline-line"></div>
                         <div class="mb-4 bg-muji-bg z-20 pt-2">
-                            <h3 class="font-bold text-2xl text-muji-text">${day.date}</h3>
+                            <div class="flex justify-between items-end">
+                                <h3 class="font-bold text-2xl text-muji-text">${day.date}</h3>
+                                ${weatherHtml}
+                            </div>
                             <div class="text-sm text-gray-500 flex items-center gap-2 mb-1">
                                 <i class="fa-solid ${day.icon}"></i> ${day.title}
                             </div>
-                            ${weatherHtml}
                         </div>
                         <div class="mt-2">
                             ${eventsHtml}
@@ -615,16 +620,14 @@
                 </div>
             `;
             
-            // Trigger simple fade animation
+            // Trigger animation
             container.animate([
-                { opacity: 0, transform: 'translateY(10px)' },
+                { opacity: 0, transform: 'translateY(5px)' },
                 { opacity: 1, transform: 'translateY(0)' }
-            ], { duration: 300, easing: 'ease-out' });
+            ], { duration: 250, easing: 'ease-out' });
         }
 
         function openWeather(location) {
-            // Redirect to Yahoo Japan Weather (English/auto-translate usually available or understandable icons)
-            // Or Weather.com. Let's use a general search which is safest for deep linking specific Japan areas.
             window.open(`https://www.google.com/search?q=weather+${location}+japan`, '_blank');
         }
 
@@ -674,10 +677,7 @@
             }
         }
 
-        // --- OTHER MODULES (Wallet, Lists, Food, Info) ---
-        // [Kept same logic as previous version for brevity in reading, but included in full copy]
-        
-        // WALLET
+        // --- OTHER MODULES ---
         let rate = localStorage.getItem('trip_rate') || 0.22;
         let expenses = JSON.parse(localStorage.getItem('trip_expenses')) || [];
         function initWallet() {
