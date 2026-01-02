@@ -187,6 +187,9 @@
         .schedule-table td { border-bottom: 1px solid #eee; padding: 6px; }
         .tag-a { background-color: #5c7c8a; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; }
         .tag-b { background-color: #c47c6e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; }
+        
+        /* Smooth Scroll Padding */
+        .scroll-mt-custom { scroll-margin-top: 140px; }
     </style>
 </head>
 <body class="font-sans antialiased text-muji-text">
@@ -241,9 +244,16 @@
             </div>
         </div>
 
-        <div id="page-food" class="page-container px-4 pt-4">
-            <h2 class="text-2xl font-bold mb-4 text-muji-text">Food Guide</h2>
-            <div id="food-list" class="space-y-4"></div>
+        <div id="page-food" class="page-container pt-0">
+             <div class="sticky top-0 bg-muji-bg z-30 pt-4 px-4 pb-2 shadow-sm">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-2xl font-bold text-muji-text">Food Guide</h2>
+                    <span class="text-xs text-gray-400">點擊切換</span>
+                </div>
+                <div id="food-day-tabs" class="flex overflow-x-auto gap-2 pb-2 no-scrollbar"></div>
+            </div>
+
+            <div id="food-list" class="space-y-4 px-4 mt-2"></div>
         </div>
 
         <div id="page-wallet" class="page-container px-4 pt-4">
@@ -407,7 +417,7 @@
             "滑雪準備": ["雪鏡", "排汗衣", "保暖長袖", "手套", "長襪", "防滑鞋", "屁墊", "暖暖包", "護膝", "護手", "冰爪"]
         };
         
-        // --- Updated Food Data ---
+        // --- Food Data ---
         const foodData = [
             {
                 day: "Day 1-3: 輕井澤 Karuizawa",
@@ -531,13 +541,12 @@
                 if (evt.type === 'html') {
                     eventsHtml += `<div class="relative pl-8 pb-4"><div class="timeline-dot absolute left-[22px] top-1"></div>${evt.content}</div>`;
                 } else {
-                    // Check for custom colors (for leaving/joining members)
+                    // Check for custom colors
                     let borderClass = evt.highlight ? 'border-l-4 border-muji-highlight pl-2' : '';
                     let textClass = evt.highlight ? 'text-muji-highlight font-bold' : '';
                     
                     if(evt.customColor) {
-                        // Apply custom classes if defined (overrides highlight)
-                        const colors = evt.customColor.split(' '); // e.g. "text-red-500 border-red-500"
+                        const colors = evt.customColor.split(' ');
                         const textC = colors.find(c => c.startsWith('text-')) || '';
                         const borderC = colors.find(c => c.startsWith('border-')) || '';
                         textClass = `${textC} font-bold`;
@@ -721,7 +730,7 @@
         function deleteShopItem(id) { if(confirm('確定刪除此項目?')) { shopList = shopList.filter(i => i.id !== id); localStorage.setItem('trip_shop', JSON.stringify(shopList)); renderShop(); } }
         function renderShop() { document.getElementById('shopContainer').innerHTML = shopList.map(item => { let content = item.type === 'link' ? `<div class="flex-1"><a href="${item.text.match(/(https?:\/\/[^\s]+)/)[0]}" target="_blank" class="block bg-gray-50 border border-gray-200 rounded p-2 mb-1 hover:bg-gray-100"><div class="flex items-center"><div class="w-8 h-8 bg-blue-100 text-blue-500 rounded flex items-center justify-center mr-2 shrink-0"><i class="fa-solid fa-link"></i></div><div class="overflow-hidden"><div class="text-xs font-bold text-gray-500 uppercase truncate">${item.meta}</div><div class="text-sm text-blue-600 truncate">${item.text}</div></div></div></a></div>` : `<span class="${item.bought ? 'line-through text-gray-400' : ''} flex-1">${item.text}</span>`; return `<div class="flex items-start bg-white p-3 rounded shadow-sm border border-gray-100 group"><button onclick="toggleShop(${item.id})" class="mr-3 mt-1 text-xl ${item.bought ? 'text-green-500' : 'text-gray-300'}"><i class="fa-solid ${item.bought ? 'fa-square-check' : 'fa-square'}"></i></button>${content}${item.bought ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded ml-2 whitespace-nowrap">已購</span>' : ''}<button onclick="deleteShopItem(${item.id})" class="ml-2 mt-1 text-gray-300 hover:text-red-500 p-1"><i class="fa-solid fa-trash"></i></button></div>`; }).join(''); }
 
-        // --- Info & Food Logic ---
+        // --- Info & Food Logic (UPDATED FOR TABS) ---
         let qrCodes = JSON.parse(localStorage.getItem('trip_qrcodes')) || [];
         function initInfo() { renderHotels(); renderQRs(); }
         function renderHotels() { document.getElementById('hotelInfo').innerHTML = hotels.map(h => `<div class="pb-2 border-b border-gray-100 last:border-0"><div class="text-xs font-bold bg-gray-200 inline-block px-1 rounded text-gray-600 mb-1">${h.date}</div><div class="font-bold text-base text-muji-accent">${h.name}</div><div class="text-xs text-gray-500 mt-1">${h.address}</div><div class="flex gap-3 mt-2"><button onclick="openMap('${h.address}')" class="text-blue-500 text-xs underline">地圖</button>${h.tel ? `<a href="tel:${h.tel}" class="text-blue-500 text-xs underline">撥打電話</a>` : ''}</div></div>`).join(''); }
@@ -729,7 +738,57 @@
         function addQRCode(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function (e) { qrCodes.push(e.target.result); localStorage.setItem('trip_qrcodes', JSON.stringify(qrCodes)); renderQRs(); }; reader.readAsDataURL(input.files[0]); } }
         function renderQRs() { document.getElementById('qrContainer').innerHTML = qrCodes.map((src, idx) => `<div class="relative group"><img src="${src}" class="w-full rounded border border-gray-200" onclick="showFullImg('${src}')"><button onclick="deleteQR(${idx})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-80"><i class="fa-solid fa-xmark"></i></button></div>`).join(''); }
         function deleteQR(idx) { if(confirm('刪除?')) { qrCodes.splice(idx, 1); localStorage.setItem('trip_qrcodes', JSON.stringify(qrCodes)); renderQRs(); } }
-        function initFood() { let html = ''; foodData.forEach(section => { html += `<h3 class="font-bold text-lg mt-6 mb-3 border-b border-gray-200 pb-1 text-muji-accent">${section.day}</h3>`; section.spots.forEach(spot => { html += `<div class="muji-card p-0 flex flex-col"><div class="p-4"><div class="flex justify-between items-start"><div><span class="text-xs font-bold bg-orange-100 text-orange-600 px-2 py-0.5 rounded">${spot.type}</span><h4 class="font-bold text-lg mt-1">${spot.name}</h4></div><button onclick="openMap('${spot.address}')" class="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center"><i class="fa-solid fa-location-arrow text-sm"></i></button></div><p class="text-sm text-gray-500 mt-2"><i class="fa-solid fa-map-pin mr-1"></i> ${spot.address}</p>${spot.tel ? `<p class="text-sm text-gray-500"><i class="fa-solid fa-phone mr-1"></i> ${spot.tel}</p>` : ''}${spot.note ? `<div class="mt-3 text-sm bg-gray-50 p-2 rounded text-gray-600">"${spot.note}"</div>` : ''}</div></div>`; }); }); document.getElementById('food-list').innerHTML = html; }
+        
+        // --- NEW FOOD LOGIC WITH TABS ---
+        function initFood() {
+            const tabContainer = document.getElementById('food-day-tabs');
+            const listContainer = document.getElementById('food-list');
+            let tabsHtml = '';
+            let listHtml = '';
+
+            foodData.forEach((section, index) => {
+                // Shorten title for tab (e.g., "Day 1-3")
+                let shortTitle = section.day.split(':')[0]; // Gets "Day 1-3"
+                if(shortTitle.length > 8) shortTitle = 'D' + shortTitle.replace('Day ', '');
+
+                // Tab Button
+                tabsHtml += `<button onclick="scrollToFoodSection(${index})" class="food-tab-btn px-4 py-2 rounded-full text-sm font-bold border border-muji-border bg-white text-gray-500 whitespace-nowrap transition-colors flex-shrink-0" id="food-btn-${index}">${shortTitle}</button>`;
+
+                // List Section
+                listHtml += `<div id="food-section-${index}" class="scroll-mt-custom">
+                    <h3 class="font-bold text-lg mb-3 border-b border-gray-200 pb-1 text-muji-accent sticky top-36 bg-muji-bg py-2 z-10 opacity-95">${section.day}</h3>
+                    <div class="space-y-4">`;
+                    
+                section.spots.forEach(spot => {
+                     listHtml += `<div class="muji-card p-0 flex flex-col"><div class="p-4"><div class="flex justify-between items-start"><div><span class="text-xs font-bold bg-orange-100 text-orange-600 px-2 py-0.5 rounded">${spot.type}</span><h4 class="font-bold text-lg mt-1">${spot.name}</h4></div><button onclick="openMap('${spot.address}')" class="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center"><i class="fa-solid fa-location-arrow text-sm"></i></button></div><p class="text-sm text-gray-500 mt-2"><i class="fa-solid fa-map-pin mr-1"></i> ${spot.address}</p>${spot.tel ? `<p class="text-sm text-gray-500"><i class="fa-solid fa-phone mr-1"></i> ${spot.tel}</p>` : ''}${spot.note ? `<div class="mt-3 text-sm bg-gray-50 p-2 rounded text-gray-600">"${spot.note}"</div>` : ''}</div></div>`;
+                });
+                listHtml += `</div></div>`;
+            });
+
+            tabContainer.innerHTML = tabsHtml;
+            listContainer.innerHTML = listHtml;
+            
+            // Highlight first tab by default
+            updateFoodTabs(0);
+        }
+
+        function scrollToFoodSection(index) {
+            document.getElementById(`food-section-${index}`).scrollIntoView({behavior: 'smooth', block: 'start'});
+            updateFoodTabs(index);
+        }
+        
+        function updateFoodTabs(activeIndex) {
+            document.querySelectorAll('.food-tab-btn').forEach((btn, idx) => {
+                if(idx === activeIndex) {
+                    btn.classList.remove('bg-white', 'text-gray-500', 'border-muji-border');
+                    btn.classList.add('bg-muji-accent', 'text-white', 'border-muji-accent');
+                    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                    btn.classList.add('bg-white', 'text-gray-500', 'border-muji-border');
+                    btn.classList.remove('bg-muji-accent', 'text-white', 'border-muji-accent');
+                }
+            });
+        }
     </script>
 </body>
 </html>
