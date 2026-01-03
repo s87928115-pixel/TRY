@@ -386,7 +386,7 @@
 
     <script>
         // --- FULL ITINERARY (11 DAYS) with MERGED EVENTS ---
-        const itinerary = [
+        const defaultItinerary = [
             { day: 1, date: "2/24 (二)", title: "抵達 & 移動輕井澤", icon: "fa-plane", weather: { text: "東京 晴 5~11°C", icon: "fa-sun", link: "Tokyo" }, events: [{ time: "06:40", title: "酷航 TR898 出發", note: "第一航廈", type: "flight" }, { time: "10:45", title: "抵達成田機場", type: "flight" }, { time: "11:13~", title: "搭車前往上野", note: "車程50分", type: "train" }, { time: "12:00", title: "上野午餐", type: "food" }, { time: "15:10", title: "新幹線 -> 輕井澤", note: "上野出發", type: "train", highlight: true }, { time: "16:30", title: "租雪具", address: "4-8 KARUIZAWAHIGASHI", type: "activity" }, { time: "18:00", title: "晚餐", type: "food" }] },
             { day: 2, date: "2/25 (三)", title: "滑雪日", icon: "fa-person-skiing", weather: { text: "輕井澤 雪 -2~3°C", icon: "fa-snowflake", link: "Nagano/Karuizawa" }, events: [{ time: "All Day", title: "滑雪", note: "輕井澤滑雪場", type: "activity" }] },
             { day: 3, date: "2/26 (四)", title: "滑雪 & 租車", icon: "fa-person-skiing", weather: { text: "輕井澤 雪 -3~2°C", icon: "fa-snowflake", link: "Nagano/Karuizawa" }, events: [{ time: "09:00", title: "滑雪", note: "至 16:00", type: "activity" }, { time: "17:00", title: "租車", type: "car", highlight: true }] },
@@ -419,7 +419,13 @@
             { day: 10, date: "3/5 (四)", title: "銀山溫泉 & 松島", icon: "fa-spa", weather: { text: "山形/松島 陰 3~8°C", icon: "fa-cloud", link: "Yamagata" }, events: [{ time: "09:10", title: "道の駅 天童温泉", type: "shop" }, { time: "10:40", title: "銀山溫泉接駁", note: "大正浪漫館搭車", type: "bus", highlight: true }, { time: "16:00", title: "松島海岸", type: "sight" }, { time: "18:00", title: "三井 OUTLET 仙台港", type: "shop" }] },
             { day: 11, date: "3/6 (五)", title: "回程", icon: "fa-plane-departure", weather: { text: "仙台/台灣 晴", icon: "fa-sun", link: "Miyagi/Sendai" }, events: [{ time: "11:30", title: "AEON MALL", type: "shop" }, { time: "14:47", title: "前往仙台機場", type: "train" }, { time: "17:25", title: "星宇 JX863 起飛", note: "20:35 抵達台灣", type: "flight", highlight: true }] }
         ];
+         let itinerary = JSON.parse(localStorage.getItem('trip_itinerary')) || defaultItinerary;
 
+        // 存檔用的函式
+        function saveItinerary() {
+            localStorage.setItem('trip_itinerary', JSON.stringify(itinerary));
+            renderDay(currentDayIndex); // 重新畫面
+        }
         // --- Data ---
         const hotels = [
             { name: "輕井澤王子飯店西館", date: "2/24-2/27", address: "389-0193 長野縣北佐久郡輕井澤町輕井澤1016-85", tel: "+81-(0)267-42-1113" },
@@ -522,13 +528,131 @@
         }
 
         // --- NAVIGATION ---
-        function renderDayTabs() {
-            const container = document.getElementById('dayTabs');
-            container.innerHTML = itinerary.map((day, idx) => `
-                <div onclick="jumpToDay(${idx})" class="day-tab ${idx === 0 ? 'active' : ''}" id="tab-${idx}">
-                    D${day.day}
+       function renderDay(index) {
+            const day = itinerary[index];
+            const container = document.getElementById('day-content');
+
+            // Tabs Styling
+            document.querySelectorAll('.day-tab').forEach((el, idx) => {
+                if(idx === index) {
+                    el.classList.add('active');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+
+            // Buttons State
+            document.getElementById('btnPrev').disabled = (index === 0);
+            document.getElementById('btnPrev').style.opacity = (index === 0) ? '0.3' : '1';
+            document.getElementById('btnNext').disabled = (index === itinerary.length - 1);
+            document.getElementById('btnNext').style.opacity = (index === itinerary.length - 1) ? '0.3' : '1';
+
+            // Events Rendering
+            let eventsHtml = '';
+            
+            // ★ 修改處 1: 加入刪除按鈕與索引值 ★
+            day.events.forEach((evt, evtIdx) => {
+                if (evt.type === 'html') {
+                    // HTML 類型 (如交通方案) 也加上刪除鈕
+                    eventsHtml += `
+                        <div class="relative pl-8 pb-4 group">
+                            <div class="timeline-dot absolute left-[22px] top-1"></div>
+                            ${evt.content}
+                            <button onclick="deleteEvent(${index}, ${evtIdx})" class="absolute top-0 right-0 text-gray-300 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-trash"></i></button>
+                        </div>`;
+                } else {
+                    let borderClass = evt.highlight ? 'border-l-4 border-muji-highlight pl-2' : '';
+                    let textClass = evt.highlight ? 'text-muji-highlight font-bold' : '';
+                    
+                    if(evt.customColor) {
+                        const colors = evt.customColor.split(' ');
+                        const textC = colors.find(c => c.startsWith('text-')) || '';
+                        const borderC = colors.find(c => c.startsWith('border-')) || '';
+                        textClass = `${textC} font-bold`;
+                        borderClass = `border-l-4 ${borderC} pl-2`;
+                    }
+
+                    const mapBtn = evt.address ? `<button onclick="openMap('${evt.address}')" class="ml-2 text-muji-accent"><i class="fa-solid fa-location-dot"></i></button>` : '';
+                    
+                    // 卡片 HTML
+                    eventsHtml += `
+                        <div class="relative pl-8 pb-6 last:pb-0 group">
+                            <div class="timeline-dot absolute left-[22px] top-1"></div>
+                            <div class="text-sm font-bold text-muji-accent">${evt.time}</div>
+                            <div class="bg-white p-3 rounded-lg shadow-sm mt-1 border border-gray-100 ${borderClass} relative">
+                                <div class="font-medium text-base ${textClass} pr-6">${evt.title} ${mapBtn}</div>
+                                ${evt.note ? `<div class="text-xs text-gray-500 mt-1">${evt.note}</div>` : ''}
+                                
+                                <button onclick="deleteEvent(${index}, ${evtIdx})" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50 transition-all">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            // ★ 修改處 2: 在最後面加入「新增行程」表單 ★
+            const addFormHtml = `
+                <div class="mt-6 pt-4 border-t border-dashed border-gray-300">
+                    <button onclick="document.getElementById('addEventForm').classList.toggle('hidden')" class="w-full py-2 text-center text-muji-accent font-bold border border-muji-accent rounded-lg border-dashed hover:bg-muji-accent hover:text-white transition-colors">
+                        + 新增行程
+                    </button>
+                    
+                    <div id="addEventForm" class="hidden mt-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+                        <div class="grid grid-cols-3 gap-2 mb-2">
+                            <input type="time" id="newEvtTime" class="muji-input col-span-1 text-sm" value="12:00">
+                            <select id="newEvtType" class="muji-input col-span-2 text-sm">
+                                <option value="sight">📷 景點</option>
+                                <option value="food">🍴 餐廳</option>
+                                <option value="shop">🛍️ 購物</option>
+                                <option value="train">🚅 交通</option>
+                                <option value="activity">🏂 活動</option>
+                            </select>
+                        </div>
+                        <input type="text" id="newEvtTitle" class="muji-input mb-2" placeholder="行程標題 (e.g. 吃拉麵)">
+                        <input type="text" id="newEvtNote" class="muji-input mb-3" placeholder="備註 (e.g. 記得訂位)">
+                        <div class="flex justify-between">
+                            <label class="flex items-center text-sm text-gray-500">
+                                <input type="checkbox" id="newEvtHighlight" class="mr-2"> 重點標記
+                            </label>
+                            <button onclick="addNewEvent(${index})" class="muji-btn text-sm">確認新增</button>
+                        </div>
+                    </div>
                 </div>
-            `).join('');
+            `;
+
+            const weatherHtml = `
+                <div class="weather-badge mb-2 shadow-sm border border-gray-100">
+                    <i class="fa-solid ${day.weather.icon} mr-2 text-blue-500"></i> ${day.weather.text}
+                    <button onclick="openWeather('${day.weather.link}')" class="ml-2 text-gray-400 hover:text-blue-600 border-l pl-2 border-gray-300"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                </div>
+            `;
+
+            container.innerHTML = `
+                <div class="animate-fade-in">
+                    <div class="relative mb-8">
+                        <div class="timeline-line"></div>
+                        <div class="mb-4 bg-muji-bg z-20 pt-2">
+                            <div class="flex justify-between items-end">
+                                <h3 class="font-bold text-2xl text-muji-text">${day.date}</h3>
+                                ${weatherHtml}
+                            </div>
+                            <div class="text-sm text-gray-500 flex items-center gap-2 mb-1">
+                                <i class="fa-solid ${day.icon}"></i> ${day.title}
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            ${eventsHtml}
+                        </div>
+                        ${addFormHtml}
+                    </div>
+                </div>
+            `;
+            
+            renderDayPhotos(index);
+            container.animate([{ opacity: 0, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 250, easing: 'ease-out' });
         }
 
         function jumpToDay(index) {
@@ -961,6 +1085,48 @@
                     btn.classList.remove('bg-muji-accent', 'text-white', 'border-muji-accent');
                 }
             });
+        }
+        // --- 新增行程邏輯 ---
+        function addNewEvent(dayIndex) {
+            const time = document.getElementById('newEvtTime').value;
+            const title = document.getElementById('newEvtTitle').value;
+            const type = document.getElementById('newEvtType').value;
+            const note = document.getElementById('newEvtNote').value;
+            const highlight = document.getElementById('newEvtHighlight').checked;
+
+            if (!title) return alert('請輸入標題');
+
+            const newEvent = {
+                time: time,
+                title: title,
+                type: type,
+                note: note,
+                highlight: highlight
+            };
+
+            // 加入陣列
+            itinerary[dayIndex].events.push(newEvent);
+
+            // 自動依照時間排序 (讓行程表保持順序)
+            itinerary[dayIndex].events.sort((a, b) => {
+                // 如果是 HTML 區塊或是 "All Day"，保持在原位或最上面，這裡簡單處理：僅比較標準時間格式
+                if (a.time === 'All Day') return -1;
+                if (b.time === 'All Day') return 1;
+                if (a.time && b.time && a.time.includes(':') && b.time.includes(':')) {
+                    return a.time.localeCompare(b.time);
+                }
+                return 0;
+            });
+
+            saveItinerary(); // 存檔並重繪
+        }
+
+        // --- 刪除行程邏輯 ---
+        function deleteEvent(dayIndex, evtIndex) {
+            if (confirm('確定要刪除這個行程嗎？')) {
+                itinerary[dayIndex].events.splice(evtIndex, 1);
+                saveItinerary(); // 存檔並重繪
+            }
         }
     </script>
 </body>
