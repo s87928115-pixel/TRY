@@ -860,8 +860,8 @@
             container.innerHTML = filteredList.map(item => {
                 let imgContent = '';
                 if (item.img) {
-                    imgContent = `<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style="background-image: url(${item.img})"></div>`;
-                } else {
+                    imgContent = `<div onclick="event.stopPropagation(); showFullImg('${item.img}')" class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110 cursor-zoom-in" style="background-image: url(${item.img})"></div>`;
+               } else {
                     imgContent = `<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-300"><i class="fa-solid fa-gift text-2xl"></i></div>`;
                 }
                 const boughtOverlay = item.bought 
@@ -1072,6 +1072,40 @@
         }
         function openWeather(loc) { window.open(`https://www.google.com/search?q=weather+${loc}+japan`, '_blank'); }
         function showFullImg(src) { const w = window.open(""); w.document.write(`<img src="${src}" style="width:100%">`); }
+        // --- 改良版：顯示全螢幕圖片 ---
+function showFullImg(src) {
+    const modal = document.getElementById('imgModal');
+    const img = document.getElementById('imgModalContent');
+    if (!modal || !img) return; // 防呆
+    
+    img.src = src;
+    modal.classList.remove('hidden');
+    // 稍微延遲一點加動畫效果
+    setTimeout(() => {
+        img.classList.remove('scale-95');
+        img.classList.add('scale-100');
+    }, 10);
+}
+
+// --- 關閉圖片 ---
+function closeImgModal() {
+    const modal = document.getElementById('imgModal');
+    const img = document.getElementById('imgModalContent');
+    
+    img.classList.remove('scale-100');
+    img.classList.add('scale-95');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        img.src = '';
+    }, 200);
+}
     </script>
+    <div id="imgModal" class="fixed inset-0 z-[1000] bg-black/90 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeImgModal()">
+    <img id="imgModalContent" src="" class="max-w-full max-h-full rounded-lg shadow-2xl scale-95 transition-transform duration-300">
+    <button class="absolute top-4 right-4 text-white/80 hover:text-white bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-md">
+        <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
+</div>
 </body>
 </html>
